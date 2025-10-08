@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Favoritos - ZUKIFLIX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    .skeleton {
+      background: linear-gradient(90deg, #2a2a2a 25%, #444 50%, #2a2a2a 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out forwards;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .active-tab svg,
+    .active-tab span {
+      color: #a855f7 !important;
+      stroke: #a855f7 !important;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-[#0a0a23] to-[#1b1b3a] text-white min-h-screen font-sans pb-24">
+
+  <div class="max-w-screen-xl mx-auto px-3 py-4">
+    <h1 class="text-xl font-bold text-center border-y border-white/10 py-2">MIS FAVORITOS</h1>
+    <h2 class="text-xs text-red-500 font-semibold mt-4 mb-3 border-l-4 border-red-500 pl-2">Películas y series guardadas</h2>
+
+    <div id="favoritos-list" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2"></div>
+
+    <p id="empty-msg" class="text-center text-gray-400 mt-6 hidden">Todavía no tienes favoritos guardados.</p>
+  </div>
+
+  <!-- PIE DE NAVEGACIÓN -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around p-2 text-white text-[10px] z-50">
+    <a href="go:INICIO" class="flex flex-col items-center hover:opacity-90">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span>Inicio</span>
+    </a>
+
+    <a href="go:FAVORITOS" class="flex flex-col items-center active-tab hover:opacity-90">
+      <i data-lucide="heart" class="w-5 h-5"></i>
+      <span>Favoritos</span>
+    </a>
+
+    <a href="go:OTROS" class="flex flex-col items-center hover:opacity-90">
+      <i data-lucide="package" class="w-5 h-5"></i>
+      <span>Otros</span>
+    </a>
+
+    <a href="go:PERFIL" class="flex flex-col items-center hover:opacity-90">
+      <i data-lucide="user" class="w-5 h-5"></i>
+      <span>Perfil</span>
+    </a>
+  </nav>
+
+  <script>
+    lucide.createIcons();
+
+    const API_KEY = "f91aff7a5c1524c5db2d8b5864747dd6";
+    const list = document.getElementById("favoritos-list");
+    const emptyMsg = document.getElementById("empty-msg");
+
+    async function fetchData(id, type) {
+      const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=es`);
+      return await res.json();
+    }
+
+    async function renderFavoritos() {
+      const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+      if (favoritos.length === 0) {
+        emptyMsg.classList.remove("hidden");
+        return;
+      }
+
+      let index = 0;
+      for (const fav of favoritos) {
+        const data = await fetchData(fav.id, fav.type);
+        const title = data.title || data.name || "Sin título";
+        const year = (data.release_date || data.first_air_date || "").split("-")[0] || "";
+        const poster = data.poster_path 
+          ? `https://image.tmdb.org/t/p/w300${data.poster_path}` 
+          : "https://via.placeholder.com/200x300?text=Sin+Imagen";
+
+        const card = document.createElement("div");
+        card.className = "fade-in cursor-pointer";
+        card.style.animationDelay = `${index * 0.05}s`;
+
+        card.innerHTML = `
+          <div class="relative w-full aspect-[2/3] bg-zinc-800 overflow-hidden rounded-lg shadow-md">
+            <div class="skeleton absolute inset-0 z-0"></div>
+            <img src="${poster}" alt="${title}" loading="lazy"
+                 class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
+                 onload="this.classList.add('opacity-100'); this.previousElementSibling.style.display='none';">
+            <button class="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white text-[0.6rem] px-1 py-[1px] rounded remove-btn">
+              ✕
+            </button>
+          </div>
+          <div class="mt-1 px-1">
+            <p class="text-[0.65rem] font-medium truncate">${title}</p>
+            <p class="text-[0.55rem] text-gray-400">${year}</p>
+          </div>
+        `;
+
+        // evento eliminar
+        card.querySelector(".remove-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+          const nuevos = favoritos.filter(f => !(f.id === fav.id && f.type === fav.type));
+          localStorage.setItem("favoritos", JSON.stringify(nuevos));
+          card.remove();
+          if (nuevos.length === 0) emptyMsg.classList.remove("hidden");
+        });
+
+        // evento abrir detalle
+        card.addEventListener("click", () => {
+          window.location.href = `go:${fav.id}`;
+        });
+
+        list.appendChild(card);
+        index++;
+      }
+    }
+
+    renderFavoritos();
+  </script>
+</body>
+</html>

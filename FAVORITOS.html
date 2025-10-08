@@ -126,9 +126,13 @@
           if (nuevos.length === 0) emptyMsg.classList.remove("hidden");
         });
 
-        // evento abrir detalle
+        // evento abrir detalle (usa la URL guardada)
         card.addEventListener("click", () => {
-          window.location.href = `go:${fav.id}`;
+          if (fav.url) {
+            window.location.href = fav.url;
+          } else {
+            console.warn("El favorito no tiene una URL asignada:", fav);
+          }
         });
 
         list.appendChild(card);

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FLIXPE DESCARGA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(180deg, #0a0018, #100021, #000);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+    .glow { text-shadow: 0 0 10px #a855f7, 0 0 25px #9333ea; }
+    .shine {
+      background: linear-gradient(90deg, #a855f7, #9333ea, #6d28d9);
+      background-size: 200% 200%;
+      animation: shine 3s infinite linear;
+    }
+    @keyframes shine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .shimmer {
+      position: relative;
+      overflow: hidden;
+      background-color: #1f1f1f;
+    }
+    .shimmer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 150%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.1), rgba(255,255,255,0));
+      animation: shimmerMove 1.5s infinite;
+    }
+    @keyframes shimmerMove { 100% { left: 150%; } }
+    .poster { transition: transform .3s ease, box-shadow .3s ease; }
+    .poster:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(168,85,247,0.6); }
+    .overlay-gradient {
+      background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(10,0,30,0.8), rgba(0,0,0,0.95));
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-bg.active { display: flex; }
+    .modal-content {
+      background-color: #0a0018;
+      border: 1px solid #9333ea;
+      border-radius: 0.75rem;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 0 30px rgba(147,51,234,0.4);
+      overflow: hidden;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    iframe { width: 100%; height: 55vh; border: none; border-radius: 0.5rem; }
+    @media (max-width: 640px) {
+      iframe { height: 40vh; }
+      h2 { font-size: 1.6rem !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="flex justify-between items-center px-6 py-4 bg-black/50 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 border-b border-purple-900/40">
+    <div class="flex items-center gap-2">
+      <img src="https://i.ibb.co/xKH7bM41/image-1.png" alt="Logo" class="w-10 h-10 rounded-lg">
+      <h1 class="text-xl font-bold text-purple-400">FLIXPE</h1>
+    </div>
+    <a href="https://apk.e-droid.net/apk/app3769437-ra3f67.apk?v=2" class="shine text-black font-semibold py-2 px-6 rounded-full text-base shadow-lg hover:scale-105 transition-transform">DESCARGAR</a>
+  </header>
+
+
+  <section class="relative w-full h-[90vh] flex items-center justify-center bg-cover bg-center"
+    style="background-image: url('https://media.themoviedb.org/t/p/original/1RgPyOhN4DRs225BGTlHJqCudII.jpg');">
+    <div class="absolute inset-0 overlay-gradient"></div>
+    <div class="relative z-10 text-center max-w-2xl px-4">
+      <h2 class="text-4xl md:text-5xl font-bold glow mb-4">Disfruta todo el entretenimiento en un solo lugar</h2>
+      <p class="text-gray-300 mb-6">Series, películas y más. Descarga la app oficial y accede a miles de contenidos gratis.</p>
+      <a href="https://apk.e-droid.net/apk/app3769437-ra3f67.apk?v=2" class="shine text-black font-semibold py-3 px-10 rounded-full text-lg shadow-lg hover:scale-105 transition-transform inline-block">DESCARGAR AHORA</a>
+    </div>
+  </section>
+
+
+  <section class="px-6 py-10 bg-gradient-to-b from-black via-purple-950/10 to-black">
+    <h3 class="text-2xl font-semibold mb-4 glow">TODO DE 2025</h3>
+    <div id="recomendado" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+  </section>
+
+
+  <div id="modal" class="modal-bg">
+    <div class="modal-content relative">
+      <button id="closeModal" class="absolute top-2 right-3 text-gray-400 hover:text-white text-3xl font-bold">&times;</button>
+      <div id="modal-body" class="p-4 text-center"></div>
+    </div>
+  </div>
+
+  <footer class="text-center text-gray-400 text-sm py-6 bg-black/80 border-t border-purple-900/40">
+    © <span id="year"></span> FLIXPE • Todos los derechos reservados
+  </footer>
+
+  <script>
+    const API_KEY = 'f91aff7a5c1524c5db2d8b5864747dd6';
+    const DOWNLOAD_LINK = 'https://apk.e-droid.net/apk/app3769437-ra3f67.apk?v=2';
+    const recomendado = [
+      { id: 1311031, type: 'movie' },
+      { id: 258901, type: 'tv' },
+      { id: 1038392, type: 'movie' },
+      { id: 120089, type: 'tv' },
+      { id: 533533, type: 'movie' },
+      { id: 37854, type: 'tv' },
+      { id: 1218925, type: 'movie' },
+      { id: 93405, type: 'tv' }
+    ];
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const grid = document.getElementById('recomendado');
+
+    recomendado.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'shimmer rounded-lg aspect-[2/3] poster cursor-pointer';
+      div.dataset.id = item.id;
+      div.dataset.type = item.type;
+      grid.appendChild(div);
+    });
+
+    async function loadTMDBData(id, type, div) {
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=es-ES`);
+        const data = await res.json();
+        const img = document.createElement('img');
+        img.src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+        img.alt = data.title || data.name;
+        img.className = 'rounded-lg poster w-full h-full object-cover';
+        img.onclick = () => openModal(id, type);
+        div.replaceWith(img);
+      } catch (err) { console.error(err); }
+    }
+
+    async function openModal(id, type) {
+      const modal = document.getElementById('modal');
+      const body = document.getElementById('modal-body');
+      modal.classList.add('active');
+      body.innerHTML = '<p class="text-center text-gray-400">Cargando...</p>';
+
+      try {
+        const [infoRes, videoRes] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=es-ES`),
+          fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&language=es-ES`)
+        ]);
+        const info = await infoRes.json();
+        const videos = await videoRes.json();
+
+        if (!videos.results.length) {
+          body.innerHTML = `<p class="text-gray-400 mb-4">No hay tráiler disponible.</p>`;
+          return;
+        }
+
+        let index = 0;
+        const updateTrailer = () => {
+          const video = videos.results[index];
+          body.innerHTML = `
+            <h2 class="text-2xl font-bold mb-3 text-purple-400">${info.title || info.name}</h2>
+            <iframe src="https://www.youtube.com/embed/${video.key}" allowfullscreen></iframe>
+            <p class="text-gray-300 mt-4">${info.overview || 'Sin sinopsis disponible.'}</p>
+            <button id="nextBtn" class="mt-5 shine text-black font-semibold py-2 px-6 rounded-full text-base shadow-lg hover:scale-105 transition-transform">Siguiente Tráiler</button>
+          `;
+          document.getElementById('nextBtn').onclick = () => {
+            index = (index + 1) % videos.results.length;
+            updateTrailer();
+          };
+        };
+
+        updateTrailer();
+      } catch (err) {
+        console.error(err);
+        body.innerHTML = `<p class="text-red-500 text-center">Error al cargar el tráiler.</p>`;
+      }
+    }
+
+    document.getElementById('closeModal').onclick = () => {
+      const modal = document.getElementById('modal');
+      modal.classList.remove('active');
+      document.getElementById('modal-body').innerHTML = '';
+    };
+
+    recomendado.forEach(item => {
+      const div = grid.querySelector(`[data-id='${item.id}']`);
+      loadTMDBData(item.id, item.type, div);
+    });
+  </script>
+</body>
+</html>

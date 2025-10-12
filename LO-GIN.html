@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FlixPe — Acceso</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root { --bg-url: url('https://i.ibb.co/BVYbQ08K/paisaje-de-anime-de-una-persona-que-viaja.jpg'); }
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui}
+    .bg-cover{ background-image: var(--bg-url); background-size: cover; background-position: center; }
+    .overlay::before{ content:""; position:absolute; inset:0; background: rgba(0,0,0,0.7); }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+    .animate-fadeIn{ animation:fadeIn .3s ease-out; }
+  </style>
+</head>
+<body class="min-h-screen relative text-white bg-black">
+
+  <!-- Fondo -->
+  <div class="absolute inset-0 bg-cover"></div>
+  <div class="absolute inset-0 overlay"></div>
+
+  <!-- Contenido -->
+  <main class="relative z-10 min-h-screen flex flex-col justify-end">
+    <div class="w-full px-6 pb-10">
+      <div class="mx-auto max-w-md text-center">
+        <!-- Logo -->
+        <div class="flex items-center justify-center gap-3 mb-3">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-600 text-white font-extrabold">FP</div>
+          <div class="text-2xl font-bold">
+            <span class="text-white">Flix</span><span class="text-red-500">Pe</span>
+          </div>
+        </div>
+
+        <p class="text-gray-200 text-sm mb-1">Aquí se ofrece anime, películas y series.</p>
+        <p class="text-gray-400 text-xs mb-6">FlixPe llegó a Latam</p>
+
+        <button onclick="explorarSinCuenta()" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 transition rounded-md py-3 font-semibold shadow-lg">
+          ¡BIENVENIDO!
+        </button>
+
+        <button onclick="openModal('loginModal')" class="w-full mt-3 border border-red-600 hover:bg-red-600 hover:text-white transition rounded-md py-3 font-semibold shadow-md">
+          INICIAR
+        </button>
+
+        <!-- Términos -->
+        <div class="flex items-center justify-between mt-4 text-sm">
+          <label class="flex items-center gap-2 text-gray-300">
+            <input id="terms" type="checkbox" class="accent-red-600" />
+            <span>Acepto <a href="go:Terminouso" class="text-red-500 hover:underline">Términos</a></span>
+          </label>
+
+          <button onclick="openModal('registerModal')" class="text-red-500 hover:underline">Crear Cuenta</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====== MODALES ====== -->
+  <!-- LOGIN -->
+  <div id="loginModal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <div class="bg-zinc-900 rounded-xl w-full max-w-md p-8 shadow-lg relative animate-fadeIn">
+      <button class="absolute top-3 right-3 text-gray-400 hover:text-white" onclick="closeModal('loginModal')">✖</button>
+      <h3 class="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h3>
+
+      <form onsubmit="event.preventDefault(); login();" class="space-y-5">
+        <!-- Email -->
+        <div class="relative">
+          <i data-lucide="mail" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i>
+          <input id="loginEmail" type="email" required
+                 class="peer w-full pl-10 pr-3 pt-5 pb-2 rounded-md bg-zinc-800 border border-zinc-700 text-white placeholder-transparent focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                 placeholder="Correo electrónico"/>
+          <label for="loginEmail" class="absolute left-10 top-2 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-red-500">
+            Correo electrónico
+          </label>
+        </div>
+
+        <!-- Password -->
+        <div class="relative">
+          <i data-lucide="lock" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i>
+          <input id="loginPassword" type="password" required
+                 class="peer w-full pl-10 pr-10 pt-5 pb-2 rounded-md bg-zinc-800 border border-zinc-700 text-white placeholder-transparent focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                 placeholder="Contraseña"/>
+          <label for="loginPassword" class="absolute left-10 top-2 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-red-500">
+            Contraseña
+          </label>
+          <button type="button" onclick="togglePassword('loginPassword', this)" class="absolute right-3 top-3 text-gray-400 hover:text-white">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 py-3 rounded-md font-semibold shadow-lg transition">Acceder</button>
+
+        <!-- 🔹 Botón de Google -->
+        <div class="relative flex items-center justify-center mt-4">
+          <div class="absolute inset-x-0 top-1/2 border-t border-zinc-700"></div>
+          <span class="relative px-3 bg-zinc-900 text-sm text-gray-400">o</span>
+        </div>
+
+        <button type="button" onclick="loginGoogle()" class="w-full mt-4 flex items-center justify-center gap-3 bg-white text-black py-3 rounded-md font-semibold shadow-md hover:bg-gray-100 transition">
+          <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5">
+          Iniciar con Google
+        </button>
+
+        <button type="button" onclick="openModal('resetModal');closeModal('loginModal')" class="block mx-auto text-sm text-gray-400 hover:text-red-400">¿Olvidaste tu contraseña?</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- (Registro y Recuperar modales permanecen igual) -->
+  <!-- ... resto de modales ... -->
+
+  <!-- Contenedor de Alertas -->
+  <div id="alertContainer" class="fixed top-6 right-6 space-y-3 z-[9999]"></div>
+
+  <!-- Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=> lucide.createIcons());
+
+    function openModal(id){
+      document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+    function togglePassword(id,btn){
+      const input=document.getElementById(id);
+      input.type=input.type==="password"?"text":"password";
+      btn.innerHTML=`<i data-lucide="${input.type==="password"?"eye":"eye-off"}" class="w-5 h-5"></i>`;
+      lucide.createIcons();
+    }
+
+    function showAlert(msg,type='info'){
+      const container=document.getElementById("alertContainer");
+      const alert=document.createElement("div");
+      const colors={success:"bg-green-600",error:"bg-red-600",info:"bg-blue-600",warning:"bg-yellow-500 text-black"};
+      const icons={success:"check-circle",error:"alert-triangle",info:"info",warning:"alert-circle"};
+      alert.className=`flex items-center gap-2 text-white px-4 py-3 rounded shadow-lg animate-fadeIn ${colors[type]||colors.info}`;
+      alert.innerHTML=`<i data-lucide="${icons[type]||icons.info}" class="w-5 h-5"></i><span>${msg}</span>`;
+      container.appendChild(alert); lucide.createIcons();
+      setTimeout(()=>{ alert.classList.add("opacity-0","translate-x-5","transition"); setTimeout(()=>alert.remove(),400); },4000);
+    }
+  </script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDlIXOq1dFvofWCXyw7vu9v6hyxq929_a0",
+      authDomain: "logflix-c4bc7.firebaseapp.com",
+      projectId: "logflix-c4bc7",
+      storageBucket: "logflix-c4bc7.firebasestorage.app",
+      messagingSenderId: "267809147909",
+      appId: "1:267809147909:web:6fe7d91f4c6c9af597a06c",
+      measurementId: "G-JJW57YF3Z6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // ✅ Redirige si hay sesión activa
+    onAuthStateChanged(auth, (user) => {
+      if (user && (user.emailVerified || user.providerData[0]?.providerId === 'google.com')) {
+        location.replace("go:INICIO");
+      }
+    });
+
+    function traducirError(codigo){
+      const mapa={
+        "auth/invalid-email":"Correo electrónico no válido",
+        "auth/email-already-in-use":"Este correo ya está registrado",
+        "auth/weak-password":"La contraseña es demasiado débil (mínimo 6 caracteres)",
+        "auth/user-not-found":"Usuario no encontrado",
+        "auth/wrong-password":"Contraseña incorrecta",
+        "auth/popup-closed-by-user":"Ventana de Google cerrada sin iniciar sesión"
+      };
+      return mapa[codigo] || "Ocurrió un error inesperado. Intenta nuevamente.";
+    }
+
+    // Registro
+    window.register = async()=>{
+      const email=document.getElementById('registerEmail').value.trim();
+      const pass=document.getElementById('registerPassword').value;
+      if(!document.getElementById('terms').checked){ showAlert("Debes aceptar los términos","error"); return; }
+      try{
+        const cred=await createUserWithEmailAndPassword(auth,email,pass);
+        await sendEmailVerification(cred.user);
+        showAlert("Cuenta creada. Revisa tu correo para verificarla.","info");
+        closeModal("registerModal");
+      }catch(e){ showAlert(traducirError(e.code),"error"); }
+    };
+
+    // Login
+    window.login = async()=>{
+      const email=document.getElementById('loginEmail').value.trim();
+      const pass=document.getElementById('loginPassword').value;
+      try{
+        const cred=await signInWithEmailAndPassword(auth,email,pass);
+        if(!cred.user.emailVerified){ showAlert("Debes verificar tu correo antes de ingresar.","warning"); return; }
+        location.replace("go:INICIO");
+      }catch(e){ showAlert(traducirError(e.code),"error"); }
+    };
+
+    // Login con Google
+    window.loginGoogle = async()=>{
+      if(!document.getElementById('terms').checked){ showAlert("Debes aceptar los términos","error"); return; }
+      try{
+        await signInWithPopup(auth, provider);
+        showAlert("Inicio de sesión con Google exitoso","success");
+        location.replace("go:INICIO");
+      }catch(e){ showAlert(traducirError(e.code),"error"); }
+    };
+
+    // Reset
+    window.resetPassword = async()=>{
+      const email=document.getElementById('resetEmail').value.trim();
+      try{ await sendPasswordResetEmail(auth,email); showAlert("Enlace de recuperación enviado","success"); closeModal("resetModal"); }
+      catch(e){ showAlert(traducirError(e.code),"error"); }
+    };
+
+    // Explorar sin cuenta
+    window.explorarSinCuenta = ()=>{
+      if(!document.getElementById('terms').checked){ showAlert("Debes aceptar los términos","error"); return; }
+      location.replace("go:IP");
+    };
+  </script>
+</body>
+</html>

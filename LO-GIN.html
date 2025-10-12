@@ -171,7 +171,7 @@
     // ✅ Redirige si hay sesión activa
     onAuthStateChanged(auth, (user) => {
       if (user && (user.emailVerified || user.providerData[0]?.providerId === 'google.com')) {
-        location.replace("go:INICIO");
+        location.replace("https://flixpe6048.github.io/flix-home/elegir-perfil.html");
       }
     });
 

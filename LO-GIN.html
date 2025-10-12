@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>FlixPe Login</title>
+  <title>FlixPe — Acceso</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -97,24 +97,68 @@
 
         <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 py-3 rounded-md font-semibold shadow-lg transition">Acceder</button>
 
-        <!-- 🔹 Botón de Google -->
-        <div class="relative flex items-center justify-center mt-4">
-          <div class="absolute inset-x-0 top-1/2 border-t border-zinc-700"></div>
-          <span class="relative px-3 bg-zinc-900 text-sm text-gray-400">o</span>
-        </div>
-
-        <button type="button" onclick="loginGoogle()" class="w-full mt-4 flex items-center justify-center gap-3 bg-white text-black py-3 rounded-md font-semibold shadow-md hover:bg-gray-100 transition">
-          <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5">
-          Iniciar con Google
-        </button>
-
         <button type="button" onclick="openModal('resetModal');closeModal('loginModal')" class="block mx-auto text-sm text-gray-400 hover:text-red-400">¿Olvidaste tu contraseña?</button>
       </form>
     </div>
   </div>
 
-  <!-- (Registro y Recuperar modales permanecen igual) -->
-  <!-- ... resto de modales ... -->
+  <!-- REGISTRO -->
+  <div id="registerModal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <div class="bg-zinc-900 rounded-xl w-full max-w-md p-8 shadow-lg relative animate-fadeIn">
+      <button class="absolute top-3 right-3 text-gray-400 hover:text-white" onclick="closeModal('registerModal')">✖</button>
+      <h3 class="text-2xl font-bold mb-6 text-center">Crear Cuenta</h3>
+
+      <form onsubmit="event.preventDefault(); register();" class="space-y-5">
+        <!-- Email -->
+        <div class="relative">
+          <i data-lucide="mail" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i>
+          <input id="registerEmail" type="email" required
+                 class="peer w-full pl-10 pr-3 pt-5 pb-2 rounded-md bg-zinc-800 border border-zinc-700 text-white placeholder-transparent focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                 placeholder="Correo electrónico"/>
+          <label for="registerEmail" class="absolute left-10 top-2 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-red-500">
+            Correo electrónico
+          </label>
+        </div>
+
+        <!-- Password -->
+        <div class="relative">
+          <i data-lucide="lock" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i>
+          <input id="registerPassword" type="password" required minlength="6"
+                 class="peer w-full pl-10 pr-10 pt-5 pb-2 rounded-md bg-zinc-800 border border-zinc-700 text-white placeholder-transparent focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                 placeholder="Contraseña"/>
+          <label for="registerPassword" class="absolute left-10 top-2 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-red-500">
+            Contraseña
+          </label>
+          <button type="button" onclick="togglePassword('registerPassword', this)" class="absolute right-3 top-3 text-gray-400 hover:text-white">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 py-3 rounded-md font-semibold shadow-lg transition">Registrar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- RECUPERAR -->
+  <div id="resetModal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <div class="bg-zinc-900 rounded-xl w-full max-w-md p-8 shadow-lg relative animate-fadeIn">
+      <button class="absolute top-3 right-3 text-gray-400 hover:text-white" onclick="closeModal('resetModal')">✖</button>
+      <h3 class="text-2xl font-bold mb-6 text-center">Recuperar Contraseña</h3>
+
+      <form onsubmit="event.preventDefault(); resetPassword();" class="space-y-5">
+        <div class="relative">
+          <i data-lucide="mail" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i>
+          <input id="resetEmail" type="email" required
+                 class="peer w-full pl-10 pr-3 pt-5 pb-2 rounded-md bg-zinc-800 border border-zinc-700 text-white placeholder-transparent focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                 placeholder="Correo electrónico"/>
+          <label for="resetEmail" class="absolute left-10 top-2 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-red-500">
+            Correo electrónico
+          </label>
+        </div>
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 py-3 rounded-md font-semibold shadow-lg transition">Enviar enlace</button>
+      </form>
+    </div>
+  </div>
 
   <!-- Contenedor de Alertas -->
   <div id="alertContainer" class="fixed top-6 right-6 space-y-3 z-[9999]"></div>
@@ -152,26 +196,24 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDlIXOq1dFvofWCXyw7vu9v6hyxq929_a0",
-      authDomain: "logflix-c4bc7.firebaseapp.com",
-      projectId: "logflix-c4bc7",
-      storageBucket: "logflix-c4bc7.firebasestorage.app",
-      messagingSenderId: "267809147909",
-      appId: "1:267809147909:web:6fe7d91f4c6c9af597a06c",
-      measurementId: "G-JJW57YF3Z6"
-    };
-
+  apiKey: "AIzaSyDlIXOq1dFvofWCXyw7vu9v6hyxq929_a0",
+  authDomain: "logflix-c4bc7.firebaseapp.com",
+  projectId: "logflix-c4bc7",
+  storageBucket: "logflix-c4bc7.firebasestorage.app",
+  messagingSenderId: "267809147909",
+  appId: "1:267809147909:web:6fe7d91f4c6c9af597a06c",
+  measurementId: "G-JJW57YF3Z6"
+};
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
 
-    // ✅ Redirige si hay sesión activa
+    // ✅ Redirige inmediato si hay sesión activa y correo verificado
     onAuthStateChanged(auth, (user) => {
-      if (user && (user.emailVerified || user.providerData[0]?.providerId === 'google.com')) {
-        location.replace("https://flixpe6048.github.io/flix-home/elegir-perfil.html");
+      if (user && user.emailVerified) {
+        location.replace("go:IP");
       }
     });
 
@@ -182,7 +224,6 @@
         "auth/weak-password":"La contraseña es demasiado débil (mínimo 6 caracteres)",
         "auth/user-not-found":"Usuario no encontrado",
         "auth/wrong-password":"Contraseña incorrecta",
-        "auth/popup-closed-by-user":"Ventana de Google cerrada sin iniciar sesión"
       };
       return mapa[codigo] || "Ocurrió un error inesperado. Intenta nuevamente.";
     }
@@ -195,7 +236,7 @@
       try{
         const cred=await createUserWithEmailAndPassword(auth,email,pass);
         await sendEmailVerification(cred.user);
-        showAlert("Cuenta creada. Revisa tu correo para verificarla.","info");
+        showAlert("Cuenta creada. Revisa tu correo para verificarla antes de iniciar sesión.","info");
         closeModal("registerModal");
       }catch(e){ showAlert(traducirError(e.code),"error"); }
     };
@@ -207,17 +248,7 @@
       try{
         const cred=await signInWithEmailAndPassword(auth,email,pass);
         if(!cred.user.emailVerified){ showAlert("Debes verificar tu correo antes de ingresar.","warning"); return; }
-        location.replace("go:INICIO");
-      }catch(e){ showAlert(traducirError(e.code),"error"); }
-    };
-
-    // Login con Google
-    window.loginGoogle = async()=>{
-      if(!document.getElementById('terms').checked){ showAlert("Debes aceptar los términos","error"); return; }
-      try{
-        await signInWithPopup(auth, provider);
-        showAlert("Inicio de sesión con Google exitoso","success");
-        location.replace("go:INICIO");
+        location.replace("go:IP");
       }catch(e){ showAlert(traducirError(e.code),"error"); }
     };
 
@@ -229,9 +260,9 @@
     };
 
     // Explorar sin cuenta
-    window.explorarSinCuenta = ()=>{
+    window.explorarSinCuenta = ()=>{ 
       if(!document.getElementById('terms').checked){ showAlert("Debes aceptar los términos","error"); return; }
-      location.replace("https://flixpe6048.github.io/flix-home/elegir-perfil.html");
+      location.replace("go:IP");
     };
   </script>
 </body>

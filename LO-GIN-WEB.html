@@ -248,7 +248,7 @@
       try{
         const cred=await signInWithEmailAndPassword(auth,email,pass);
         if(!cred.user.emailVerified){ showAlert("Debes verificar tu correo antes de ingresar.","warning"); return; }
-        location.replace("go:IP");
+        location.replace("https://flixpe.neocities.org/AVATAR");
       }catch(e){ showAlert(traducirError(e.code),"error"); }
     };
 
@@ -262,7 +262,7 @@
     // Explorar sin cuenta
     window.explorarSinCuenta = ()=>{ 
       if(!document.getElementById('terms').checked){ showAlert("Debes aceptar los términos","error"); return; }
-      location.replace("go:IP");
+      location.replace("https://flixpe.neocities.org/AVATAR");
     };
   </script>
 </body>

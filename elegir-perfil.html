@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body,
+    h1,
+    h2,
+    h3,
+    p,
+    button,
+    input {
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-weight: 700;
+    }
+
+    .img-option {
+      border: 3px solid transparent;
+      transition: border 0.3s;
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .img-option.selected {
+      border-color: #9333ea;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .scroll-x {
+      display: flex;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      gap: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .scroll-x::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .carousel-btn.left {
+      left: -10px;
+    }
+
+    .carousel-btn.right {
+      right: -10px;
+    }
+
+    .section-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Spinner */
+    #spinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      transition: opacity 0.5s ease;
+    }
+
+    .hidden-fade {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner-border {
+      width: 4rem;
+      height: 4rem;
+      border: 5px solid #9333ea;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Animación de aparición */
+    .fade-in {
+      opacity: 0;
+      transform: scale(0.95);
+      animation: aparecer 0.6s ease forwards;
+    }
+
+    @keyframes aparecer {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center">
+
+  <!-- Spinner de carga -->
+  <div id="spinner">
+    <div class="spinner-border"></div>
+  </div>
+
+  <h1 class="text-3xl font-light mb-10">Elige tu perfil</h1>
+  <div id="perfilesContainer" class="flex flex-wrap gap-6 justify-center mb-6 fade-in"></div>
+  <button id="editarBtn" class="mt-4 px-4 py-2 bg-gray-700 text-white rounded hidden">Editar perfiles</button>
+  <button id="guardarCambiosGlobal" class="mt-2 px-4 py-2 bg-green-600 text-white rounded hidden">Guardar
+    cambios</button>
+
+  <!-- Modal Crear Perfil -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center hidden z-50">
+    <div class="bg-gray-800 p-6 rounded w-full max-w-md">
+      <h2 class="text-xl mb-4">Crear nuevo perfil</h2>
+      <input id="nombrePerfil" type="text" placeholder="Nombre del perfil" class="w-full p-2 rounded mb-4 text-black">
+      <div class="space-y-4">
+        <!-- Secciones con carrusel -->
+        <div class="section-group">
+          <div class="section-title"><span>Clásicos</span></div>
+          <div class="carousel-container">
+            <button class="carousel-btn left" onclick="scrollLeft('imagenesClasicas')">‹</button>
+            <div class="scroll-x" id="imagenesClasicas">
+              <img
+                src="https://i.ibb.co/F4Yh0VbY/AAAABTN9tk-3s-R6-JTS09-CPq-TLl-Genr-UG8n-Mby-MNc-MMx1n0-ZJd9xmo0-Vy-Dd4-HQ9-A9ro-Ioh-RLSa-Jn-Uao-Xtg.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/nq5Dzb38/AAAABe4-Osa8-If-Yjc-J-05-2i0r-ABjx-R2kf9-A-vt16-Zl3-Myc-OK5oj4-UJt-Ya-V3-M8-H4z-HDyqgm-On1-TY88a6tzq.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Kp9YQYBB/AAAABceq6j-TMf-Dev8-YWD-I8-Bj8-NB-0s-Uk8-ZZwcx-Vr-VTf-B8-KWuz-Qhy-WWRXE-Ze-Jae-Po-Lm-Aj-EM1-Ql-Mc-C0.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/hRVZ9jtY/AAAABROQy5l-SPv-S3y-Qujqd-Czy-VOaji3-Kg-WHRsg-V3a-Ve-Otpcu-CK-v0-CYpovh-SW4-Pzl-OHg-ERp-WW-o9h-Ws-H8.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/jPKgc79y/AAAABUcrl-RM8xyfke-Ghi-Hq-MFb-Xm9-Fu-Gwxd-UMvjjlox3gn-Vq0-BOeram-l-Fujg-H17-JFQ3-H4-eg-Jmrav0rdo-Uc.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/xKqnsBSD/AAAABT9w-BL4i4y-FGrz-Smw-Su-CMGZ3xf0v-MGTX2a-Bn-Mc-KMXV-FF1-FDo5j-FK78-YT6-Fub-ASMk-Aanb-DSHq-HHJLJf.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Q7WLcmfR/AAAABf0-Uo-MPJp-SWyo-WGsq-Ozi1-D8z8m-SEa4l-NJ-m-Lyr-BF9w-Mzz-Nc-QAjw-A-Me-UC2-YFWPBktzzwo-O0-fo-Ce-Q.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/5Wp9DW2t/AAAABVXCf-ZIm-Ve-UYQW9ki-W6fc3348-Ig5o-GRvny-KDTauj-X4u-P-b-X-YSt-R7hjdjbu-Gnqs38-HETLh3yp4-XGJveuz7.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/QF0w7W2M/AAAABTNxr-MYx95-Zi2mfmfa-PMi-F8ey2-m-CKDUQBEel-GKAt-Xy-SPB8-Brc-rx-K2-O1shy-W8-Potb-Lrx6a-Kb9j-WFBEo.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Wvv78rNB/AAAABeh-DTgrv-Oef-Fy-Ob-Wbj-OTz-Kjknqb-Rtz-Io7-HXv-Da8c-Rj-Qz-De-Tg-DAilok-PLwip9-Sq-H2-Aak-YYg-Mrp.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/KzqW90T8/AAAABdgq-Ru86-LNrf-FPu-Q2-Xhlz2-NQehmsez-XIx7-Hy-Vhy-QXZ1w-K8n97-Qjo-Jn-Daiu-Kn-WVn-Xcl-SIoqmrdlc-Xy.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/yCRmsqr/AAAABSn2-6-LFL85-K2778-Xevmp-Ml-Kr-Qdbx-P8s-Dw-Ztd2-J3r-Qbp9-DHH4p-Svtfhb-Dmi-FQb1-MYo1-BP1bfbisw-S3.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/sdnmm2bd/AAAABedn-HIHIK95j-F0b-4-JSktr-UZP1-DSp-XOu-QU8w-G6-IN1-Ki-VYw0-Y9cm1-JMv-T-MJw-IES-p-ve-L5x-Bkr-Wy-K.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/d4FnQ7gf/AAAABQYlg7rw1jw8-D4q-ZVk-ZSRxx-Rx-XOws-Y6wi-ZLTh-DOU9-Yk-DTz8-Py-AUd1-98em-Ur-Szgo-PSTj-Di-Mgatt-Ay.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/svvZBPzV/AAAABQ1da-RTyjb8-NMz-XFgw-IWDY2x-Snz-ZQlabe-Qypg29-Jrwl6bpt-Bj3-NFb3-O5mn-x-Gtlju-YRws-Kb9-Ef3-Gr-WA.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Cpk7yyzz/AAAABb-Bd-WEzsqtpc-YRf-W0o-Cl-Q8jd-Jx6u-HK5o-Ni-HQPNZr-Uhr-T5-2gizvu-V0z-Rpg-Yo-XI-h-S7-Jqd-Z1-Q-m-C.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/35t7C34m/AAAABa-Khq8-ko-Re36dg-ZIz-Ztoo4-GJj-IIBVe6-WQ9c-Hsm-OWj-yahyk-Bnxc-Msn-Ryq-BG-E81w-Vhsxv-KSIM0x-H8q.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/pjnnj0v0/AAAABct-Yl-Cz-Olq-C1hd-Ck-R-KU5-IQx82p-Dkg-FTr-Ir-Ccmcw-E-Bnxjnbt8-Ydgfi-ASj0-Rha-Tdd-Ao0o-IIto-LHO.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/R4bfZ26H/AAAABXFZn-Mq0a-IUs-Td1-J4-Zy10-Ta-Pi4-Ulx3-VRy-T-ZN1p9-XYc-E1-KAon0-Ndskx0e2t-Tr9haj-ESYNDSn-Srb-Dex.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/5XLpdwn2/AAAABTIZOev-u19-Mt-7c0-K1-XCw-Czd-Twm-EIe-On-Skts-LHUug-Saqg3-NEdm7-Uw-QT61s-Gtcc-Toc-B8-YP980t-te4i.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/bR627Yg6/AAAABW7-Wui3-Zq-Hq-Bvl3-R-Tm-Y0s-DZF-x-Bx-JJinh-VWRwu7-Om-Yk-F2bdw-H4nqfny-T3-YQ-Jsh-Qvap33b-Db-RLAC.png"
+                class="img-option">
+            </div>
+            <button class="carousel-btn right" onclick="scrollRight('imagenesClasicas')">›</button>
+          </div>
+        </div>
+
+        <div class="section-group">
+          <div class="section-title"><span>El juego del calamar</span></div>
+          <div class="carousel-container">
+            <button class="carousel-btn left" onclick="scrollLeft('imagenesGames')">‹</button>
+            <div class="scroll-x" id="imagenesLCDP">
+              <img
+                src="https://i.ibb.co/ynK6fmfs/AAAABc-Iup-CYCqha-Bo-D5-7z2ldd-BAPAas-Lk-RUro-Uw-D0-Vaviql-Tp-IJk6cejw5s-IFp-YQHMIl-I4u-Bc1-CWhe-Z-g.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/bMpNzmpz/AAAABf-Xvfv-E9-Ff-Ad-S0mbu-QIU-PVut-CW8j-Wi50gh-BPX147u-Yhg-XUBMDs-O8-Gfg5-Lu2-OD-bdlh-JJw-WUKv4-M1.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/WvW6rvm6/AAAABRUMKCDXI6-B8lpm-Upt-LQyu8j7-FWa0-MBLv-LGNEHNu-BKozokyc2-Qc-L91-Vp-Bwn-QGy-C-D69-r8-VIcc4-KP1zyg.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/DPyjqBD6/AAAABYCE4-Dzi-TY1-GFki-Wu-Vzs-XYY3h-J6fj-Pa-AEx9qr-GUXUQf-Xy9p-Yr-V3dl-Z8-Y1-Vql-An-Bu2-Bp-ELq-CXb-M.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/FkCGpstf/AAAABYht-E5s-HSv-ML3-I4hth14n-Dh27-Ymy-NA0o-lbd-Bta3-I6i-Jls-UEZzh5-WTDen-Cixi9-BX9p-Ar2z-Zm6y-DRt-H.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Nd3hwdh8/AAAABfc0ny-Vc-Kl9j-IDOP34ta-J0-RSs-A3z-Dm-N6-M-d9-Tw-YWPlhk6f-KZd-Hp4-MEv-HMa7wvy-Yag9fwh-Jxx-IT8f-w.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/bMQbbZtr/AAAABWVo-Yzl-Sivj-XDh16y-Jta-Z2-BJ11-T4-Tnjuu2-ODGqz-GHa-Mv-Gli-RQga-Qrro-Mg-VMDf-Xtlp9-QKPYSKIWHIGj.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/0RxmZyv4/AAAABYPt5ogv7kt50-Iyn-Pljo-DL-Hb-LMy-K-E3k-WL9t2v-Ihd-PO5-Zb-L0-V-egeu-XAh-Jg-Tj2w-WAIs-DVEgx-H08x1.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Y7XhgPp5/AAAABc-T3-HSgl-Wu-Xnt-Qd-Nlty83-QLZv-M4-Nm-Ve9m-Zn-Kcs-IOkv-R5-F657b-Y4-UO-Ui0-duo8-HLou3cpjf-MLr-Bx.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/qL2RG8j5/AAAABQK8u-Pxpc-I-Q0mi-Lq-FUJRnbge-MVi9l-Expu8-Qvm-BVj-Hf-I6k-Tt-JErm-Zb-BZYq-P9-Wfm-Xz-Q-E1r-QYLp-Pj.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/FbgJz66c/AAAABQjm7vh-To-Ci-Ph-Qr-D-D6q7-K-Sd5-RNqr-Xy-X1m2-Lt-Mndh6kg3-BABdz-RMIt-Hq-Jkibf-KHLDb-Lnv-Ww-Ax-NL.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/TpxHpdN/AAAABWaz-Tk-Y7-D-Gm-CWf-R9lw-a-Bw-WHkokrilvbx-Pw-Dwvxqniy-VD51oy2ww-Xett-RYSEPO-kcuo-Hqz-hi-RCQt3q-V.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/cSxXjHbH/AAAABf-TRh0-d-AC7-K6-V2f-Rz-Rfwn-j-CUj-FKr21wyc5np1awn28f-ZJi-Fx1-Fjp-SFP6-Ak-Pg2um-Rw8xx4ux4-f-Il-W.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/ZRn9y208/AAAABd-Zyyckm-QYh-Tgzavixer-X7smg-F663-Y1-Ygcbg-R8-DPWkjj4xg1-CESE2-CEOBc-IZIQ0snn-Qu-Nj-W3a-HX8i8-D.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/cHrWXHH/AAAABe-HDSEm-QK0r0g-Q-x-ELcw-KUl-HGPqtqq-Qsa-S-c-a-C1-Vpy-Vwv0fpr5ysv-Tsmvsi3fq-Kyepo-M-Xwsm-Nx5-Euj.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/pVkxPd3/AAAABe-Fy-Ecqb-Vq-GC7oi3-K9cy-VATQEf-Rjg80ndv-EGBng-UDv-FTpjr66-F-Bw1-V9-QEd-p-CSv-JDu1-EGth5-Mh-G6o.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/YBZVQmy0/AAAABXfto-A7-Ax7xkh-TGj-Vj-Rsz3-Aawld-EA0dd-Lo-Blhmd-5-Zkw-EVf-M5r-J-Vu-SSUG4-P49k-Pdxho-SVqa-Xuw-Mv.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/jkXn9Df8/AAAABYb-Nqefo-ODEPNDz-PGHwc-Td-QKDYiy9-Jh7-I5-LE5my-Z0r-Zv7g-R2r8-N-w-Rd-Hoz-M-k-Yaya-U9-S7-N0e33-Dw.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/JWZms8jS/AAAABU871o-OIIhj3-GQUT7-Cy4m2bkhgv7e-K6jx-Tip-IYBIj-R1v-ESI8yb6-Yym-XFXJ45-B0-Q4l-Cy-Dd-XMnqi-SRa7-H.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/jPg46g06/AAAABTm-T36-Mc-Uhmjz-EIm-VTeodyf-Bc-Ys-E15f-Gsrccb-Mcplld-Qqyhlj-NDj-Ta-Ai-Yu-Oaxt48l1m-De5vn3-PNWJe.png"
+                class="img-option">
+            </div>
+            <button class="carousel-btn right" onclick="scrollRight('imagenesLCDP')">›</button>
+          </div>
+        </div>
+
+        <div class="section-group">
+          <div class="section-title"><span>Sandman</span></div>
+          <div class="carousel-container">
+            <button class="carousel-btn left" onclick="scrollLeft('imagenesSquid')">‹</button>
+            <div class="scroll-x" id="imagenesSquid">
+              <img
+                src="https://i.ibb.co/pBJbV2zK/AAAABd-Dv-MLKG44-Mb-8-BWdxi5o-UQmq-Kn7y-UPf6w-Vqg-BCzjx-M1-Gl-FV64p-Ljy-Rlrg-I7ose-BLey6-Myzyg-R2iz.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/DHNLstHy/AAAABRr-QRLLTECDge-EUN1-U3-Vlw3vto8mv-Pzon-ZUw-bc4sz-I9ti-GVtk-VTbt-EYjl-JZKZLs-SU86f3-M3-B-Eb-Wah-F.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/fzR7Wcdn/AAAABTh5h-Puluu-X4-R9ptk-Od62-V3-Q2-Xt-ZLZOEel-Y4-Sw3-Gg-Jz-G5w5-DDNplu-Zv-XC1bg3-Y-IENu-U800xr-BExd.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/d45zDKJs/AAAABUW5k10s-WGlq-Gohjw-Kp-Na-Itj7i1-LTo-C3565hf-Fthlwoe-PFt18-S52g-XNBLg-Po-VMZl-ZJRBWZpzhv-Aw-A9mg.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/ZRnmXMC2/AAAABXo-JTm-Ryp-64387-Sl32-BIya-Vu-Ryh-UP3-Pi-TBG2-Jcoxd1-UZjy-Oy-Cwa-S5-Gs-Rpjxhmt-4-Un-QKp-If-Sg-M.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/ZRnmXMC2/AAAABXo-JTm-Ryp-64387-Sl32-BIya-Vu-Ryh-UP3-Pi-TBG2-Jcoxd1-UZjy-Oy-Cwa-S5-Gs-Rpjxhmt-4-Un-QKp-If-Sg-M.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/TBXk4GZh/AAAABeb6edh3-S2j-PVB3-Jjv3k-Ji-I1jrt-R0-Mk-IOswn-CEQIt-Tit-Wp-MGox-HRs-Fdau-Lph-NZ4-SUd-G2ch-NVNPT65.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/Y4SyzCFC/AAAABUJ4-EX5-LRc-Xqjk77q-BC-xm-B2-F77-BJFnkj-Sf-A82-ZMm-Gk3-Cj95p-E7rd-Sd-Or-G3i-Hf-Btfi-L86se-CIFj.png"
+                class="img-option">
+              <img
+                src="https://i.ibb.co/mCzRkbd8/AAAABe-TGGg8-Im-IZc-VGVdue-Xs-Kv-Jeuh-Ss-Mh-LV8m-Cg-Fmu-Me3-Kf-Xx-JL-Szd-Ko3gwwq-AU9-Y5b0d53umpzy-NO.png"
+                class="img-option">
+            </div>
+            <button class="carousel-btn right" onclick="scrollRight('imagenesSquid')">›</button>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="modal.classList.add('hidden')" class="bg-red-600 px-4 py-2 rounded">Cancelar</button>
+        <button id="guardarPerfil" class="bg-green-600 px-4 py-2 rounded">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar Perfil -->
+  <div id="modalEditar" class="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center hidden z-50">
+    <div class="bg-gray-800 p-6 rounded w-full max-w-md">
+      <h2 class="text-xl mb-4">Editar perfil</h2>
+      <input id="nuevoNombre" type="text" placeholder="Nuevo nombre" class="w-full p-2 rounded mb-4 text-black">
+      <div class="space-y-4">
+        <!-- secciones omitidas (idénticas a las que enviaste) -->
+      </div>
+      <div class="mt-4 flex justify-between">
+        <button id="eliminarPerfil" class="bg-red-600 px-4 py-2 rounded">Eliminar</button>
+        <div class="flex gap-2">
+          <button onclick="modalEditar.classList.add('hidden')" class="bg-gray-600 px-4 py-2 rounded">Cancelar</button>
+          <button id="guardarCambios" class="bg-green-600 px-4 py-2 rounded">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    function scrollLeft(id) {
+      const container = document.getElementById(id);
+      container.scrollBy({ left: -100, behavior: 'smooth' });
+    }
+    function scrollRight(id) {
+      const container = document.getElementById(id);
+      container.scrollBy({ left: 100, behavior: 'smooth' });
+    }
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDlIXOq1dFvofWCXyw7vu9v6hyxq929_a0",
+  authDomain: "logflix-c4bc7.firebaseapp.com",
+  projectId: "logflix-c4bc7",
+  storageBucket: "logflix-c4bc7.firebasestorage.app",
+  messagingSenderId: "267809147909",
+  appId: "1:267809147909:web:6fe7d91f4c6c9af597a06c",
+  measurementId: "G-JJW57YF3Z6"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore(app);
+
+    const spinner = document.getElementById("spinner");
+
+    let imagenSeleccionada = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png";
+    let imagenEditarSeleccionada = "";
+    let perfilSeleccionadoId = null;
+    let modoEditar = false;
+
+    const perfilesContainer = document.getElementById("perfilesContainer");
+    const modal = document.getElementById("modal");
+    const modalEditar = document.getElementById("modalEditar");
+    const modalInput = document.getElementById("nombrePerfil");
+    const inputEditar = document.getElementById("nuevoNombre");
+    const guardarBtn = document.getElementById("guardarPerfil");
+    const guardarCambiosBtn = document.getElementById("guardarCambios");
+    const eliminarPerfilBtn = document.getElementById("eliminarPerfil");
+    const editarBtn = document.getElementById("editarBtn");
+    const guardarCambiosGlobalBtn = document.getElementById("guardarCambiosGlobal");
+
+    function seleccionarImagen(contenedor, callback) {
+      contenedor.querySelectorAll("img").forEach(img => {
+        img.onclick = () => {
+          contenedor.querySelectorAll("img").forEach(i => i.classList.remove("selected"));
+          img.classList.add("selected");
+          callback(img.src);
+        };
+      });
+    }
+
+    function crearElementoPerfil(nombre, id, imagen) {
+      const div = document.createElement("div");
+      div.className = "flex flex-col items-center hover:scale-105 transition cursor-pointer relative fade-in";
+      div.innerHTML = `
+        <div class="relative w-24 h-24 bg-gray-600 rounded overflow-hidden">
+          <img src="${imagen}" class="w-full h-full object-cover" />
+        </div>
+        <span class="mt-2 text-sm">${nombre}</span>
+      `;
+      div.onclick = () => {
+        if (modoEditar) {
+          perfilSeleccionadoId = id;
+          inputEditar.value = nombre;
+          imagenEditarSeleccionada = imagen;
+          modalEditar.classList.remove("hidden");
+        } else {
+          localStorage.setItem("perfilSeleccionadoImagen", imagen);
+          localStorage.setItem("perfilSeleccionadoNombre", nombre);
+          window.location.href = "go:INICIO";
+        }
+      };
+      return div;
+    }
+
+    function actualizarPerfiles(uid) {
+      const perfilesRef = collection(db, "usuarios", uid, "perfiles");
+      onSnapshot(perfilesRef, (snapshot) => {
+        perfilesContainer.innerHTML = "";
+        snapshot.docs.forEach(docSnap => {
+          const perfil = docSnap.data();
+          const perfilElement = crearElementoPerfil(perfil.nombre, docSnap.id, perfil.imagen);
+          perfilesContainer.appendChild(perfilElement);
+        });
+        spinner.classList.add("hidden-fade"); // Ocultar spinner al cargar perfiles
+        editarBtn.classList.toggle("hidden", snapshot.size === 0);
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.emailVerified) {
+        actualizarPerfiles(user.uid);
+      }
+    });
+  </script>
+</body>
+</html>

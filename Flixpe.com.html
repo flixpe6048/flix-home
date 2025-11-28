@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLIXPE LOGIN</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      overflow: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ALERTA */
+    #overlayAlert {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      font-family: sans-serif;
+    }
+
+    #alertBox {
+      background: #111;
+      width: 85%;
+      max-width: 380px;
+      padding: 25px;
+      border-radius: 15px;
+      color: white;
+      text-align: center;
+      border: 2px solid #e50914;
+      box-shadow: 0 0 20px rgba(229,9,20,.6);
+    }
+
+    #alertBox h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: #e50914;
+    }
+
+    #alertBox p {
+      opacity: .9;
+      margin-bottom: 25px;
+      font-size: 15px;
+    }
+
+    .alert-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-download {
+      background: #333;
+      color: #fff;
+      border: 1px solid #777;
+    }
+
+    .btn-continue {
+      background: #e50914;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ALERTA -->
+  <div id="overlayAlert">
+    <div id="alertBox">
+      <h2>FLIXPE</h2>
+      <p>Para una mejor experiencia usa nuestra App oficial.</p>
+      <button class="alert-btn btn-download" id="downloadApp">Descargar App</button>
+      <button class="alert-btn btn-continue" id="continueBtn">Continuar sin App</button>
+    </div>
+  </div>
+
+  <script>
+
+    // Función para detectar si un evento proviene del iframe
+    function isInsideIframe(event) {
+      return event.target.ownerDocument !== document;
+    }
+
+    const REDIRECT_URL = "https://flixpe.neocities.org/404";
+
+    // Crear iframe
+    const iframe = document.createElement("iframe");
+    iframe.src = "https://play.zaha360.com/main/index.php";
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    iframe.allowFullscreen = true;
+
+    Object.assign(iframe.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      border: "none",
+      display: "block"
+    });
+
+    document.body.appendChild(iframe);
+
+    // Alerta 5 segundos
+    setTimeout(() => {
+      document.getElementById("overlayAlert").style.display = "flex";
+    }, 5000);
+
+    document.getElementById("downloadApp").onclick = () => {
+      window.location.href = "https://senig.neocities.org/";
+    };
+
+    document.getElementById("continueBtn").onclick = () => {
+      document.getElementById("overlayAlert").style.display = "none";
+    };
+
+
+    // FORZAR HORIZONTAL
+    document.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement) {
+        iframe.style.transform = "rotate(90deg) translate(-50%, -50%)";
+        iframe.style.width = "100vh";
+        iframe.style.height = "100vw";
+        iframe.style.top = "50%";
+        iframe.style.left = "50%";
+      } else {
+        iframe.style.transform = "none";
+        iframe.style.width = "100vw";
+        iframe.style.height = "100vh";
+      }
+    });
+
+
+    // -------------------------
+    // SEGURIDAD (NO bloquea iframe)
+    // -------------------------
+
+    document.addEventListener("contextmenu", e => {
+      if (isInsideIframe(e)) return;
+      e.preventDefault();
+      window.location.replace(REDIRECT_URL);
+    });
+
+    ["selectstart", "dragstart"].forEach(evt =>
+      document.addEventListener(evt, e => {
+        if (isInsideIframe(e)) return;
+        e.preventDefault();
+      })
+    );
+
+    document.addEventListener("keydown", e => {
+      if (isInsideIframe(e)) return;
+
+      const key = e.key.toLowerCase();
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(key)) ||
+        (e.ctrlKey && key === "u")
+      ) {
+        e.preventDefault();
+        window.location.replace(REDIRECT_URL);
+      }
+    });
+
+    setInterval(() => {
+      const threshold = 160;
+      if (
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+      ) {
+        window.location.replace(REDIRECT_URL);
+      }
+    }, 700);
+
+    window.addEventListener("resize", () => {
+      iframe.style.width = `${window.innerWidth}px`;
+      iframe.style.height = `${window.innerHeight}px`;
+    });
+
+  </script>
+</body>
+</html>
